@@ -7,16 +7,16 @@ import pandas as pd
 class MyApp():
     def __init__(self):
         self.count = 0
-        self.locked = False
-        self.parcelObj = {}
+        self.parcelList = []
         self.main()
 
     def main(self):
         name = str(input('Enter parcel {count} >> '.format(count=self.count)))
         weight = float(input('Enter parcel {count} weight >> '.format(count=self.count)))
         distance = float(input('Enter parcel {count} shipping distance in km >> '.format(count=self.count)))
-        self.parcelObj[name] = {'weight': weight, 'distance': distance}
-        self.calculat(self.parcelObj[name])
+        item = {'name': name, 'weight': weight, 'distance': distance}
+        self.parcelList.append(item)
+        self.calculat(item)
         self.conttinue()
 
     def calculat(self, item):
@@ -46,21 +46,26 @@ class MyApp():
             self.display()
 
     def display(self):
-        for k, v in self.parcelObj.items():
-            print('====== Parcel {count} ======'.format(count=self.count))
-            print('PARCEL NO   :{k}'.format(k=k))
-            print('WEIGHT   :{weight}'.format(weight=v['weight']))
-            print('DISTANCE   :{distance}'.format(distance=v['distance']))
-            print('SHIPPIING COST :{price}'.format(price=v['price']))
+        for i in range(len(self.parcelList)):
+            item = self.parcelList[i]
+            print('====== Parcel {count} ======'.format(count=i))
+            print('PARCEL NO   : {k}'.format(k=item['name']))
+            print('WEIGHT   : {weight}kg'.format(weight=item['weight']))
+            print('DISTANCE   : {distance}km'.format(distance=item['distance']))
+            print('SHIPPIING COST : ${price}'.format(price=item['price']))
         self.bars()
 
     def bars(self):
-        parcelNames = list(self.parcelObj.keys())
-        parcelWeight = list(map(lambda item: item['weight'], self.parcelObj.values()))
-        parcelDistance = list(map(lambda item: item['distance'], self.parcelObj.values()))
-        parcelPrice = list(map(lambda item: item['price'], self.parcelObj.values()))
-        parcelItem = list(self.parcelObj.values())
-        print(parcelItem)
+        parcelNames = []
+        parcelWeight = []
+        parcelDistance = []
+        parcelPrice = []
+        for i in range(len(self.parcelList)):
+            parcelNames.append(self.parcelList[i]['name'])
+            parcelWeight.append(self.parcelList[i]['weight'])
+            parcelDistance.append(self.parcelList[i]['distance'])
+            parcelPrice.append(self.parcelList[i]['price'])
+
         x = np.arange(len(parcelNames))
         width = 0.25
         plt.bar(x, parcelWeight, width, color='red', label='parcelWeight')
@@ -69,12 +74,12 @@ class MyApp():
         plt.xticks(x, labels=parcelNames)
         plt.legend()
         plt.show()
-        df = pd.DataFrame.from_dict(parcelItem)
-        print(df.max(), '1')
-        print(df.min(), '2')
-        print(df.std(), '3')
-        print(df.mode(), '4')
-        print(df.mean(), '5')
+        counts = np.bincount(parcelPrice)
+        print(np.mean(parcelPrice), 'Average shipping cost')
+        print(np.min(parcelDistance), 'Minimum distance')
+        print(np.max(parcelWeight), 'Maximum weight')
+        print(np.std(parcelPrice), 'Shipping cost standard deviation')
+        print(np.argmax(counts), 'Mode shipping cost')
 
 
 if __name__ == "__main__":
